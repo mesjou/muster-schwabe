@@ -1,53 +1,123 @@
 # Personal Finance Analyzer
 
-This application helps you analyze your banking transactions by categorizing them and providing visual insights into your spending patterns.
+A web application that helps you analyze your personal finances by processing CSV files of banking transactions, categorizing expenses, and visualizing spending patterns.
 
 ## Features
 
-- Import banking transaction data from CSV files
-- Categorize transactions (food, rent, sports, etc.)
-- Visualize spending patterns through various plots
-- Track monthly spending by category
+- Upload CSV files of banking transactions
+- Automatic categorization of expenses
+- Interactive visualizations:
+  - Pie chart of spending by category
+  - Bar chart of spending by category
+  - Line chart of daily spending trends
+- Summary statistics
 
-## Setup
+## Project Structure
+
+```
+.
+├── backend/               # Python FastAPI backend
+│   ├── src/              # Source code
+│   │   ├── __init__.py   # Package initialization
+│   │   ├── main.py       # FastAPI application
+│   │   └── services/     # Business logic
+│   │       ├── __init__.py
+│   │       └── analyzer.py
+│   ├── pyproject.toml    # Python package configuration
+│   └── run.py           # Script to run the backend
+└── frontend/            # React TypeScript frontend
+    ├── src/             # Source code
+    │   └── App.tsx      # Main application component
+    └── package.json     # Node.js dependencies
+```
+
+## Prerequisites
+
+- Python 3.8 or higher
+- Node.js 16 or higher
+- npm or yarn
+- uv (Python package installer)
+
+## Setup and Running
+
+### Backend
 
 1. Install uv (if not already installed):
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
 
-2. Create a virtual environment and install dependencies:
-```bash
-uv venv
-source .venv/bin/activate
-uv pip install -e .
-```
+2. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 
-3. Place your banking CSV file in the `data` directory
+3. Create and activate a virtual environment:
+   ```bash
+   # On macOS/Linux
+   uv venv
+   source .venv/bin/activate
+   ```
 
-4. Run the application:
-```bash
-python main.py
-```
+4. Install dependencies:
+   ```bash
+   uv pip install -e .
+   ```
 
-## CSV File Format
+5. Start the backend server:
+   ```bash
+   python run.py
+   ```
 
-The application expects a CSV file with the following columns:
-- Date
-- Description
-- Amount
-- Balance
+The backend will be available at http://localhost:8000
 
-## Categories
+### Frontend
 
-The application uses the following default categories:
-- Food & Dining
-- Housing & Rent
-- Transportation
-- Entertainment
-- Shopping
-- Health & Fitness
-- Utilities
-- Other
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
-You can modify these categories in the `main.py` file.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The frontend will be available at http://localhost:3000
+
+## Usage
+
+1. Prepare your banking transaction data in CSV format with the following columns:
+   - Date
+   - Description
+   - Amount
+
+2. Open the application in your browser at http://localhost:3000
+3. Drag and drop your CSV file or click to select it
+4. View the analysis and visualizations
+
+## Development
+
+### Backend
+
+- FastAPI backend with automatic API documentation at http://localhost:8000/docs
+- Uses Pandas for data processing
+- Transaction categorization based on description keywords
+- Built with Python 3.8+ and modern Python packaging (pyproject.toml)
+- Uses uv for fast and reliable package management
+
+### Frontend
+
+- React with TypeScript
+- Material-UI for components
+- Recharts for data visualization
+- File upload with drag-and-drop support
+
+## License
+
+MIT
