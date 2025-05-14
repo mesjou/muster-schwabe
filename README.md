@@ -24,21 +24,43 @@ A web application that helps you analyze your personal finances by processing CS
 │   │       ├── __init__.py
 │   │       └── analyzer.py
 │   ├── pyproject.toml    # Python package configuration
+│   ├── Dockerfile        # Backend Docker configuration
 │   └── run.py           # Script to run the backend
-└── frontend/            # React TypeScript frontend
-    ├── src/             # Source code
-    │   └── App.tsx      # Main application component
-    └── package.json     # Node.js dependencies
+├── frontend/            # React TypeScript frontend
+│   ├── src/             # Source code
+│   │   └── App.tsx      # Main application component
+│   ├── package.json     # Node.js dependencies
+│   └── Dockerfile       # Frontend Docker configuration
+└── docker-compose.yml   # Docker Compose configuration
 ```
 
-## Prerequisites
+## Quick Start with Docker
+
+The easiest way to run the application is using Docker Compose:
+
+```bash
+# Build and start the containers
+docker compose up --build
+
+# To run in detached mode
+docker compose up -d
+
+# To stop the containers
+docker compose down
+```
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+
+## Manual Setup
+
+### Prerequisites
 
 - Python 3.8 or higher
 - Node.js 16 or higher
 - npm or yarn
 - uv (Python package installer)
-
-## Setup and Running
 
 ### Backend
 
@@ -57,6 +79,10 @@ A web application that helps you analyze your personal finances by processing CS
    # On macOS/Linux
    uv venv
    source .venv/bin/activate
+
+   # On Windows
+   uv venv
+   .\.venv\Scripts\activate
    ```
 
 4. Install dependencies:
