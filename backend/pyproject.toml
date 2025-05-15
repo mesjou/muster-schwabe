@@ -36,9 +36,7 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "UP", "PL", "RUF"]
-ignore = ["UP035", "UP006"]  # Ignore typing deprecation warnings
-fixable = ["ALL"]
-unfixable = []
+ignore = []
 
 [tool.ruff.lint.isort]
 known-first-party = ["finance_analyzer"]

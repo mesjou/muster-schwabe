@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -11,7 +9,12 @@ services:
       - ./backend:/app
     environment:
       - PYTHONUNBUFFERED=1
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   frontend:
     build:
@@ -19,11 +22,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     environment:
-      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
     depends_on:
-      - backend
-    restart: unless-stopped
+      backend:
+        condition: service_healthy
