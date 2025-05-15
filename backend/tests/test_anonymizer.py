@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 import pandas as pd
 
-from src.services.anonymizer import anonymize_dataframe, anonymize_text, is_valid_iban
+from src.services.anonymizer import ANONYMOUS_VALUE, anonymize_dataframe, anonymize_text, is_valid_email, is_valid_iban
 
 
 def test_is_valid_iban():
@@ -17,25 +17,32 @@ def test_is_valid_iban():
     assert not is_valid_iban(str(123))  # Convert int to string
 
 
+def test_is_valid_email():
+    # Test valid emails
+    assert is_valid_email("test@example.com")
+    assert is_valid_email("test.test@example.com")
+    assert is_valid_email("test@subdomain.example.com")
+
+    # Test invalid emails
+    assert not is_valid_email("invalid")
+    assert not is_valid_email("test@")
+    assert not is_valid_email("test@example")
+
+
 def test_anonymize_text():
     # Test IBAN anonymization
     original_iban = "DE89370400440532013000"
     anonymized_iban = anonymize_text(original_iban)
-    assert anonymized_iban != original_iban
-    assert is_valid_iban(anonymized_iban)
-
+    assert anonymized_iban == ANONYMOUS_VALUE
     # Test phone number anonymization
     original_phone = "+491234567890"
     anonymized_phone = anonymize_text(original_phone)
-    assert anonymized_phone != original_phone
-    assert "+" in anonymized_phone
+    assert anonymized_phone == original_phone
 
     # Test email anonymization
     original_email = "test@example.com"
     anonymized_email = anonymize_text(original_email)
-    assert anonymized_email != original_email
-    assert "@" in anonymized_email
-    assert "." in anonymized_email
+    assert anonymized_email == ANONYMOUS_VALUE
 
     # Test non-sensitive text
     original_text = "Regular text"
@@ -52,9 +59,16 @@ def test_anonymize_dataframe():
     # Create test DataFrame with sensitive data
     df = pd.DataFrame(
         {
-            "iban": ["DE89370400440532013000", "DE89370400440532013001"],
-            "phone": ["+491234567890", "+499876543210"],
+            "iban": ["DE89370400440532013000", "DE89370400440532013000"],
             "email": ["test1@example.com", "test2@example.com"],
+            "regular_text": ["Hello", "World"],
+        }
+    )
+
+    df_result = pd.DataFrame(
+        {
+            "iban": [ANONYMOUS_VALUE, ANONYMOUS_VALUE],
+            "email": [ANONYMOUS_VALUE, ANONYMOUS_VALUE],
             "regular_text": ["Hello", "World"],
         }
     )
@@ -63,25 +77,8 @@ def test_anonymize_dataframe():
     df_anon = anonymize_dataframe(df)
 
     # Check that all columns were processed
-    assert len(df_anon.columns) == len(df.columns)
-
-    # Check that sensitive data was anonymized
-    for i in range(len(df)):
-        # IBAN should be different but valid
-        assert df_anon.iloc[i]["iban"] != df.iloc[i]["iban"]
-        assert is_valid_iban(df_anon.iloc[i]["iban"])
-
-        # Phone should be different but contain +
-        assert df_anon.iloc[i]["phone"] != df.iloc[i]["phone"]
-        assert "+" in df_anon.iloc[i]["phone"]
-
-        # Email should be different but contain @ and .
-        assert df_anon.iloc[i]["email"] != df.iloc[i]["email"]
-        assert "@" in df_anon.iloc[i]["email"]
-        assert "." in df_anon.iloc[i]["email"]
-
-        # Regular text should remain unchanged
-        assert df_anon.iloc[i]["regular_text"] == df.iloc[i]["regular_text"]
+    print(df_anon, df_result)
+    pd.testing.assert_frame_equal(df_anon, df_result)
 
 
 def test_anonymize_dataframe_with_mixed_types():
@@ -94,13 +91,16 @@ def test_anonymize_dataframe_with_mixed_types():
         }
     )
 
+    df_result = pd.DataFrame(
+        {
+            "text": [ANONYMOUS_VALUE, "123", str(None)],
+            "numbers": ["1", "2", "3"],
+            "mixed": [ANONYMOUS_VALUE, "456", "+491234567890"],
+        }
+    )
+
     # Anonymize the DataFrame
     df_anon = anonymize_dataframe(df)
 
     # Check that all values were converted to strings
-    assert all(df_anon.dtypes == "object")
-
-    # Check that sensitive data was anonymized
-    assert is_valid_iban(df_anon.iloc[0]["text"])
-    assert "@" in df_anon.iloc[0]["mixed"]
-    assert "+" in df_anon.iloc[2]["mixed"]
+    pd.testing.assert_frame_equal(df_anon, df_result)

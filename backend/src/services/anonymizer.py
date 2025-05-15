@@ -1,8 +1,7 @@
 """Module for anonymizing sensitive data in DataFrames."""
-from typing import Any
+from typing import Optional
 
 import pandas as pd
-import phonenumbers
 from faker import Faker
 from schwifty import IBAN
 
@@ -10,10 +9,11 @@ from schwifty import IBAN
 fake = Faker("de_DE")
 
 
+ANONYMOUS_VALUE = "XXXXXXX"
+
+
 def is_valid_iban(text: str) -> bool:
     """Check if a string is a valid IBAN."""
-    if not isinstance(text, str):
-        return False
     try:
         IBAN(text.replace(" ", ""))
         return True
@@ -21,27 +21,27 @@ def is_valid_iban(text: str) -> bool:
         return False
 
 
-def anonymize_text(text: Any) -> Any:
+def is_valid_email(text: str) -> bool:
+    """Check if a string is a valid email."""
+    if "@" in text and "." in text.split("@")[1]:
+        return True
+    return False
+
+
+def anonymize_text(text: Optional[str]) -> Optional[str]:
     """Anonymize sensitive information in a text string."""
     if not isinstance(text, str):
         return text
 
     # Check for IBAN
     if is_valid_iban(text):
-        return fake.iban()
-
-    # Check for phone numbers (both international and German format)
-    try:
-        # Try to parse as German number first
-        number = phonenumbers.parse(text, "DE")
-        if phonenumbers.is_valid_number(number):
-            return fake.phone_number()
-    except phonenumbers.NumberParseException:
-        pass
+        print(text, "detected IBAN")
+        return ANONYMOUS_VALUE
 
     # Check for email addresses
-    if "@" in text and "." in text.split("@")[1]:
-        return fake.email()
+    if is_valid_email(text):
+        print(text, "detected Email")
+        return ANONYMOUS_VALUE
 
     return text
 
@@ -49,6 +49,7 @@ def anonymize_text(text: Any) -> Any:
 def anonymize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """Anonymize sensitive data in all columns of the DataFrame."""
     # Create a copy to avoid modifying the original
+    print(df)
     df_anon = df.copy()
 
     # Process all columns
@@ -58,4 +59,5 @@ def anonymize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         # Apply anonymization
         df_anon[col] = df_anon[col].apply(anonymize_text)
 
+    print(df_anon)
     return df_anon
