@@ -2,7 +2,7 @@
 name = "finance-analyzer-backend"
 version = "0.1.0"
 description = "Backend for the Personal Finance Analyzer application"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "fastapi==0.104.1",
     "uvicorn==0.24.0",
@@ -10,6 +10,17 @@ dependencies = [
     "python-multipart==0.0.6",
     "pydantic==2.5.2",
     "python-dotenv==1.0.0",
+    "schwifty==2025.1.0",
+    "faker==22.6.0",
+    "phonenumbers==8.13.30",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.4",
+    "pytest-cov==4.1.0",
+    "pytest-asyncio==0.23.3",
+    "pytest-mock==3.12.0",
 ]
 
 [build-system]
@@ -20,10 +31,16 @@ build-backend = "hatchling.build"
 packages = ["src"]
 
 [tool.ruff]
-line-length = 88
-target-version = "py38"
+line-length = 120
+target-version = "py39"
 select = ["E", "F", "I", "N", "W", "B", "UP", "PL", "RUF"]
 ignore = []
 
 [tool.ruff.isort]
 known-first-party = ["finance_analyzer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --cov=src --cov-report=term-missing"
