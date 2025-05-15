@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import pandas as pd
 
@@ -43,8 +43,9 @@ def test_anonymize_text():
 
     # Test non-string input
     non_string_input: Any = 123
+    none_input: Optional[str] = None
     assert anonymize_text(non_string_input) == non_string_input
-    assert anonymize_text(None) is None
+    assert anonymize_text(none_input) is None
 
 
 def test_anonymize_dataframe():

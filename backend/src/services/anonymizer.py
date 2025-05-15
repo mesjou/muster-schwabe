@@ -1,4 +1,6 @@
 """Module for anonymizing sensitive data in DataFrames."""
+from typing import Any
+
 import pandas as pd
 import phonenumbers
 from faker import Faker
@@ -19,7 +21,7 @@ def is_valid_iban(text: str) -> bool:
         return False
 
 
-def anonymize_text(text: str) -> str:
+def anonymize_text(text: Any) -> Any:
     """Anonymize sensitive information in a text string."""
     if not isinstance(text, str):
         return text
