@@ -33,10 +33,14 @@ packages = ["src"]
 [tool.ruff]
 line-length = 120
 target-version = "py39"
-select = ["E", "F", "I", "N", "W", "B", "UP", "PL", "RUF"]
-ignore = []
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B", "UP", "PL", "RUF"]
+ignore = ["UP035", "UP006"]  # Ignore typing deprecation warnings
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.isort]
 known-first-party = ["finance_analyzer"]
 
 [tool.pytest.ini_options]

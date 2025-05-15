@@ -35,12 +35,10 @@ def anonymize_text(text: Optional[str]) -> Optional[str]:
 
     # Check for IBAN
     if is_valid_iban(text):
-        print(text, "detected IBAN")
         return ANONYMOUS_VALUE
 
     # Check for email addresses
     if is_valid_email(text):
-        print(text, "detected Email")
         return ANONYMOUS_VALUE
 
     return text
@@ -49,7 +47,6 @@ def anonymize_text(text: Optional[str]) -> Optional[str]:
 def anonymize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """Anonymize sensitive data in all columns of the DataFrame."""
     # Create a copy to avoid modifying the original
-    print(df)
     df_anon = df.copy()
 
     # Process all columns
@@ -59,5 +56,4 @@ def anonymize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         # Apply anonymization
         df_anon[col] = df_anon[col].apply(anonymize_text)
 
-    print(df_anon)
     return df_anon

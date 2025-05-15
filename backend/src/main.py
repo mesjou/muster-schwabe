@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .services.analyzer import analyze_transactions
+from .services.anonymizer import anonymize_dataframe
 
 app = FastAPI()
 
@@ -71,10 +72,14 @@ async def analyze_transactions_endpoint(file: UploadFile = None):
         "Zahlungsempfänger*in": "Recipient",
         "Verwendungszweck": "Description",
         "Betrag (€)": "Amount",
+        "IBAN": "IBAN",  # Keep IBAN for anonymization
     }
 
     # Keep only the columns we need and rename them
     df = df[list(columns_to_keep.keys())].rename(columns=columns_to_keep)
+
+    # Anonymize sensitive data
+    df = anonymize_dataframe(df)
 
     # Convert date format (assuming DD.MM.YY format)
     df["Date"] = pd.to_datetime(df["Date"], format="%d.%m.%Y", errors="coerce")
@@ -90,7 +95,7 @@ async def analyze_transactions_endpoint(file: UploadFile = None):
 
     # Combine recipient and description for better categorization
     df["Description"] = df["Recipient"] + " - " + df["Description"]
-    df = df.drop("Recipient", axis=1)
+    df = df.drop(["Recipient", "IBAN"], axis=1)  # Drop IBAN after anonymization
 
     # Analyze transactions
     return analyze_transactions(df)
