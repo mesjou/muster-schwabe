@@ -7,7 +7,7 @@ def categorize_transaction(description: str) -> str:
     categories = {
         "Food & Dining": ["restaurant", "cafe", "grocery", "supermarket", "food", "rewe", "lidl"],
         "Housing & Rent": ["rent", "mortgage", "housing"],
-        "Transportation": ["uber", "lyft", "taxi", "transport", "fuel", "gas", "Deutsche Bahn", "DB"],
+        "Transportation": ["uber", "lyft", "taxi", "transport", "fuel", "gas", "deutsche bahn", "db"],
         "Entertainment": ["netflix", "spotify", "cinema", "theater", "concert"],
         "Shopping": ["amazon", "walmart", "target", "shop", "store"],
         "Health & Fitness": ["gym", "fitness", "health", "medical", "pharmacy"],
@@ -15,7 +15,7 @@ def categorize_transaction(description: str) -> str:
     }
 
     for category, keywords in categories.items():
-        if any(keyword in description for keyword in keywords):
+        if any(keyword.lower() in description for keyword in keywords):
             return category
     return "Other"
 

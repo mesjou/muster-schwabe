@@ -2,12 +2,7 @@
 from typing import Optional
 
 import pandas as pd
-from faker import Faker
 from schwifty import IBAN
-
-# Initialize Faker for generating realistic anonymized data
-fake = Faker("de_DE")
-
 
 ANONYMOUS_VALUE = "XXXXXXX"
 

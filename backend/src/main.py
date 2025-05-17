@@ -1,5 +1,4 @@
 import io
-from typing import Dict, List
 
 import pandas as pd
 from fastapi import FastAPI, File, UploadFile
@@ -29,9 +28,9 @@ class Transaction(BaseModel):
 
 
 class AnalysisResponse(BaseModel):
-    summary: Dict[str, float]
-    by_category: Dict[str, float]
-    daily_spending: List[Dict[str, float]]
+    summary: dict[str, float]
+    by_category: dict[str, float]
+    daily_spending: list[dict[str, float]]
 
 
 # Define the expected header as a module-level constant
@@ -72,7 +71,6 @@ async def analyze_transactions_endpoint(file: UploadFile = None):
         "Zahlungsempfänger*in": "Recipient",
         "Verwendungszweck": "Description",
         "Betrag (€)": "Amount",
-        "IBAN": "IBAN",  # Keep IBAN for anonymization
     }
 
     # Keep only the columns we need and rename them
@@ -95,7 +93,6 @@ async def analyze_transactions_endpoint(file: UploadFile = None):
 
     # Combine recipient and description for better categorization
     df["Description"] = df["Recipient"] + " - " + df["Description"]
-    df = df.drop(["Recipient", "IBAN"], axis=1)  # Drop IBAN after anonymization
 
     # Analyze transactions
     return analyze_transactions(df)
