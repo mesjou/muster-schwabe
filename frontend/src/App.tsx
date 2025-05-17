@@ -8,10 +8,7 @@ interface AnalysisResponse {
     total: number;
   };
   by_category: Record<string, number>;
-  daily_spending: Array<{
-    date: string;
-    amount: number;
-  }>;
+  daily_spending: Record<string, number>;
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B'];
@@ -165,13 +162,35 @@ function App() {
                   Daily Spending Trend
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <LineChart width={600} height={300} data={analysis.daily_spending}>
+                  <LineChart
+                    width={600}
+                    height={300}
+                    data={Object.entries(analysis.daily_spending).map(([date, amount]) => ({
+                      date,
+                      amount
+                    }))}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => `$${value.toFixed(2)}`}
+                    />
+                    <Tooltip
+                      labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, 'Amount']}
+                    />
                     <Legend />
-                    <Line type="monotone" dataKey="amount" stroke="#8884d8" name="Amount" />
+                    <Line
+                      type="monotone"
+                      dataKey="amount"
+                      stroke="#8884d8"
+                      name="Amount"
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
                   </LineChart>
                 </Box>
               </Paper>

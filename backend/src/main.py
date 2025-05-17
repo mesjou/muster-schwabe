@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 
 import pandas as pd
 from fastapi import FastAPI, File, UploadFile
@@ -30,7 +31,7 @@ class Transaction(BaseModel):
 class AnalysisResponse(BaseModel):
     summary: dict[str, float]
     by_category: dict[str, float]
-    daily_spending: list[dict[str, float]]
+    daily_spending: dict[datetime, float]
 
 
 # Define the expected header as a module-level constant
@@ -65,6 +66,9 @@ async def analyze_transactions_endpoint(file: UploadFile = None):
     csv_data = "\n".join(lines[header_idx:])
     df = pd.read_csv(io.StringIO(csv_data), sep=";", quotechar='"')
 
+    # Anonymize sensitive data
+    df = anonymize_dataframe(df)
+
     # Select and rename the required columns
     columns_to_keep = {
         "Buchungsdatum": "Date",
@@ -76,11 +80,8 @@ async def analyze_transactions_endpoint(file: UploadFile = None):
     # Keep only the columns we need and rename them
     df = df[list(columns_to_keep.keys())].rename(columns=columns_to_keep)
 
-    # Anonymize sensitive data
-    df = anonymize_dataframe(df)
-
     # Convert date format (assuming DD.MM.YY format)
-    df["Date"] = pd.to_datetime(df["Date"], format="%d.%m.%Y", errors="coerce")
+    df["Date"] = pd.to_datetime(df["Date"], format="%d.%m.%y")
 
     # Convert amount format (handling German number format)
     df["Amount"] = (
